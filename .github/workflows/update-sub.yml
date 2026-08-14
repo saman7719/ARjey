@@ -1,0 +1,35 @@
+name: Update Hiddify Subscription
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download subscription
+        run: |
+          curl -L --fail --retry 3 \
+            "http://95.182.92.154:8080/sub/yrTJjIPxJvqpMhLu" \
+            -o sub.b64
+
+      - name: Decode subscription
+        run: |
+          base64 -d -i sub.b64 > hiddify_4_1_1_subscription.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hiddify_4_1_1_subscription.txt
+          git diff --cached --quiet || git commit -m "Update Hiddify subscription"
+          git push
