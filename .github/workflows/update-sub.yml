@@ -18,48 +18,19 @@ jobs:
 
       - name: Download subscription
         run: |
-          set -e
-
-          URL="http://95.182.92.154:8080/sub/yrTJjIPxJvqpMhLu"
-
-          for i in 1 2 3 4 5; do
-            echo "Attempt $i..."
-
-            if curl -L \
-              --fail \
-              --connect-timeout 30 \
-              --max-time 180 \
-              --retry 2 \
-              --retry-delay 10 \
-              "$URL" \
-              -o sub.b64; then
-
-              echo "Download successful."
-              break
-            fi
-
-            echo "Download failed. Waiting 20 seconds..."
-            sleep 20
-          done
-
-          test -s sub.b64
+          curl -L --fail --retry 3 \
+            "http://95.182.92.154:8080/sub/yrTJjIPxJvqpMhLu" \
+            -o sub.b64
 
       - name: Decode subscription
         run: |
           base64 -d -i sub.b64 > hiddify_4_1_1_subscription.txt
 
-          test -s hiddify_4_1_1_subscription.txt
-
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add hiddify_4_1_1_subscription.txt
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Update Hiddify subscription"
-            git push
-          fi
+          git diff --cached --quiet || git commit -m "Update Hiddify subscription"
+          git push
+  
