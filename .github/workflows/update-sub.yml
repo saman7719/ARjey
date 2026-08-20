@@ -20,7 +20,7 @@ jobs:
         run: |
           set -e
 
-          http://104.252.111.115:8080/sub/yrTJjIPxJvqpMhLu
+          URL="http://104.252.111.115:8080/sub/yrTJjIPxJvqpMhLu"
 
           for i in 1 2 3 4 5; do
             echo "Attempt $i..."
